@@ -1,0 +1,50 @@
+[workspace]
+members = [
+    "crates/storage",
+    "crates/cli-core",
+    "crates/deltakit-core",
+    "crates/deltakit-cli",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+authors = ["Deltakit Contributors"]
+rust-version = "1.74"
+
+[workspace.dependencies]
+anyhow = "1.0"
+thiserror = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+clap = { version = "4.5", features = ["derive", "string"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt", "json"] }
+indicatif = "0.17"
+rayon = "1.10"
+chrono = { version = "=0.4.35", features = ["serde"] }
+humantime = "2.1"
+blake3 = "1.5"
+tokio = { version = "1.39", features = ["rt-multi-thread", "macros", "fs", "io-util", "time"] }
+regex = "1.10"
+url = "2.5"
+bytesize = "1.3"
+bytes = "1.6"
+futures = "0.3"
+
+# Delta + object_store. Keep features small; s3 opt-in at workspace feature level.
+deltalake = { version = "0.18", default-features = false }
+object_store = { version = "0.9" }
+
+[workspace.lints.rust]
+unused = "allow"
+dead_code = "allow"
+
+[workspace.lints.clippy]
+all = "allow"
+
+[workspace.metadata.deltakit]
+description = "Deltakit — tiny Delta Lake helper CLI and library"
+
+

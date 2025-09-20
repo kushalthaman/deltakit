@@ -1,0 +1,29 @@
+[package]
+name = "deltakit-cli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+clap = { workspace = true }
+tracing = { workspace = true }
+indicatif = { workspace = true }
+humantime = { workspace = true }
+tokio = { workspace = true }
+cli-core = { path = "../cli-core" }
+deltakit-core = { path = "../deltakit-core" }
+bytesize = { workspace = true }
+
+[[bin]]
+name = "deltakit"
+path = "src/main.rs"
+
+[features]
+default = []
+s3 = ["deltakit-core/s3"]
+gcs = ["deltakit-core/gcs"]
+azure = ["deltakit-core/azure"]
+
+
