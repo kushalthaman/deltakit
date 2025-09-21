@@ -1352,6 +1352,7 @@ dependencies = [
  "indicatif",
  "serde",
  "serde_json",
+ "shard-planner",
  "tokio",
  "tracing",
 ]
@@ -3597,6 +3598,24 @@ dependencies = [
  "cfg-if",
  "cpufeatures",
  "digest",
+]
+
+[[package]]
+name = "shard-planner"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "blake3",
+ "bytesize",
+ "chrono",
+ "deltakit-core",
+ "itertools 0.12.1",
+ "rand 0.8.5",
+ "rayon",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]

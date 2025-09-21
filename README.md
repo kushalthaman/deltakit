@@ -2,8 +2,10 @@
 
 Deltakit is a CLI and library for those working on training systems and working with data in Delta Lake. For fast diffs, counts, compaction planning, partition health, manifests, and safety checks.
 
+The kit contains a shard planner which does deterministic, versioned shard assignment of active files (or row-groups) into K shards optimized for balanced bytes or rows with constraints (e.g. co-locate by partitions, max files/shard, sticky assignment across versions). Distributed training and large batch jobs want stable work distribution, resumability, and little to no churning across versions. 
+
 ## features
-- **ls**, **diff**, **rowcount**, **partition‑health**, **manifest** (emit a stable file list for external readers (Trino/Presto/filelist/Hive)), **vacuum‑dry‑run** (orphans vs referenced files and safety flags), **snapshot**. also: `zorder-plan`, `schema-guard`, `drift`, `footprint`, `dedupe-plan`.
+- **ls**, **diff**, **rowcount**, **partition‑health**, **manifest** (emit a stable file list for external readers (Trino/Presto/filelist/Hive)), **vacuum‑dry‑run** (orphans vs referenced files and safety flags), **snapshot**, **shard‑manifest** (deterministic K‑shard planner for training or batching). also: `zorder-plan`, `schema-guard`, `drift`, `footprint`, `dedupe-plan`.
 
 ## installation
 ```bash
@@ -38,6 +40,9 @@ cargo install --path crates/deltakit-cli
 
 # materialize a stable file list
 ./target/debug/deltakit snapshot /data/delta/my_table --version 432 --out files.txt
+
+# deterministic shard manifest for training/batch
+./target/debug/deltakit shard-manifest /data/delta/my_table --version 432 --shards 64 --by dt --sticky-by dt --balance bytes --json | jq .
 ```
 
 ## CLI usage

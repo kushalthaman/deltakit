@@ -4,6 +4,7 @@ members = [
     "crates/cli-core",
     "crates/deltakit-core",
     "crates/deltakit-cli",
+    "crates/shard-planner",
 ]
 resolver = "2"
 
@@ -32,6 +33,8 @@ url = "2.5"
 bytesize = "1.3"
 bytes = "1.6"
 futures = "0.3"
+pyo3 = { version = "0.21", features = ["extension-module"] }
+maturin = { version = "1.8", default-features = false, features = ["pyo3"] }
 
 # Delta + object_store. Keep features small; s3 opt-in at workspace feature level.
 deltalake = { version = "0.18", default-features = false }

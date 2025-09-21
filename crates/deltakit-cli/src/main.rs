@@ -25,6 +25,7 @@ enum Commands {
     Manifest { uri: String, #[arg(long)] version: i64, #[arg(long, default_value = "trino")] format: String },
     VacuumDryRun { uri: String, #[arg(long, default_value = "7")] retention: i64 },
     Snapshot { uri: String, #[arg(long)] version: i64, #[arg(long)] out: String },
+    ShardManifest { uri: String, #[arg(long)] version: i64, #[arg(long)] shards: u32, #[arg(long, default_value = "bytes")] balance: String, #[arg(long = "by")] by: Option<String>, #[arg(long = "sticky-by")] sticky_by: Option<String>, #[arg(long = "max-files-per-shard")] max_files_per_shard: Option<usize>, #[arg(long = "row-group-aware", default_value_t = false)] row_group_aware: bool },
 }
 
 #[tokio::main]
@@ -41,6 +42,7 @@ async fn main() -> Result<()> {
         Commands::Manifest { uri, version, format } => cmd_manifest(&cli.globals, &uri, version, &format).await?,
         Commands::VacuumDryRun { uri, retention } => cmd_vacuum(&cli.globals, &uri, retention).await?,
         Commands::Snapshot { uri, version, out } => cmd_snapshot(&cli.globals, &uri, version, &out).await?,
+        Commands::ShardManifest { uri, version, shards, balance, by, sticky_by, max_files_per_shard, row_group_aware } => cmd_shard_manifest(&cli.globals, &uri, version, shards, &balance, by, sticky_by, max_files_per_shard, row_group_aware).await?,
     }
     Ok(())
 }
@@ -165,6 +167,16 @@ async fn cmd_snapshot(_glob: &GlobalArgs, uri: &str, version: i64, out: &str) ->
         writeln!(file, "{}", e.path)?;
     }
     Ok(())
+}
+
+async fn cmd_shard_manifest(glob: &GlobalArgs, uri: &str, version: i64, shards: u32, balance: &str, by: Option<String>, sticky_by: Option<String>, max_files: Option<usize>, row_group_aware: bool) -> Result<()> {
+    use shard_planner as sp;
+    let mode = match balance.to_ascii_lowercase().as_str() { "rows" => sp::BalanceMode::Rows, _ => sp::BalanceMode::Bytes };
+    let split_csv = |s: Option<String>| -> Vec<String> { s.map(|x| x.split(',').map(|t| t.trim().to_string()).filter(|t| !t.is_empty()).collect()).unwrap_or_default() };
+    let opts = sp::ShardOptions { by: split_csv(by), sticky_by: split_csv(sticky_by), max_files_per_shard: max_files, balance: mode, row_group_aware };
+    let h = core::load_table(uri).await?;
+    let shards = sp::plan_shards(&h, version, shards, opts).await?;
+    print_output(glob.json, &shards)
 }
 
 

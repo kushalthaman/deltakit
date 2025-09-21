@@ -15,6 +15,7 @@ tokio = { workspace = true }
 cli-core = { path = "../cli-core" }
 deltakit-core = { path = "../deltakit-core" }
 bytesize = { workspace = true }
+shard-planner = { path = "../shard-planner" }
 
 [[bin]]
 name = "deltakit"
